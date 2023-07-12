@@ -1,3 +1,10 @@
+dataset/nuscenes/v1.0-mini
+
+
+# for IDE
+.idea
+.vscode
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
