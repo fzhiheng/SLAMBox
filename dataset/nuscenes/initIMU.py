@@ -26,6 +26,7 @@ if __name__ == '__main__':
 
     for scene in nusc.scene:
         scene_name = scene['name']
+        print("=====================>")
         print(scene_name)
         # nusc_can.print_all_message_stats(scene_name)
         # 这里得到的信息是全部序列的信息，不是sampel的信息
@@ -37,9 +38,26 @@ if __name__ == '__main__':
         longitudinal_accel = np.array([m['longitudinal_accel'] for m in wheel_])
         transversal_accel = np.array([m['transversal_accel'] for m in wheel_])
 
+        # nusc_can.plot_message_data(scene_name, 'zoe_veh_info', 'longitudinal_accel')
+        # nusc_can.plot_message_data(scene_name, 'zoe_veh_info', 'transversal_accel')
+
         # 获取IMU的三轴加速度
         imu_time = np.array([m['utime'] for m in imu_])
         linear_accel = np.array([m['linear_accel'] for m in imu_])
+
+        # 画出IMUxyz方向的加速度，用不同颜色表示
+        x = linear_accel[:, 0]
+        y = linear_accel[:, 1]
+        z = linear_accel[:, 2]
+        plt.title(scene_name)
+        plt.plot((imu_time-imu_time[0])/1e6, x, color='red')
+        plt.plot((imu_time-imu_time[0])/1e6, y, color='green')
+        # plt.plot((imu_time-imu_time[0])/1e6, z, color='blue')
+        plt.plot((wheel_time-imu_time[0])/1e6, longitudinal_accel, color='black')
+        plt.plot((wheel_time-imu_time[0])/1e6, transversal_accel, color='orange')
+        plt.legend(['x', 'y', 'longitudinal_accel', 'transversal_accel'])
+        plt.show()
+
 
         # 计算IMU和Wheel的时间差
         td = (imu_time[0]-wheel_time[0])/1e6
@@ -48,7 +66,6 @@ if __name__ == '__main__':
         wheel_time = wheel_time/1e6
         imu_time = imu_time/1e6
 
-        # IMU初始化使用前0.1s的数据（图像帧率大于为12）
         cur_time = imu_time[0]
         last_time = imu_time[0] + 0.1
         imu_sample = np.where((imu_time >= cur_time) & (imu_time <= last_time))[0]

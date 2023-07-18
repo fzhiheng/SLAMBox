@@ -1,4 +1,5 @@
 dataset/nuscenes/v1.0-mini
+dataset/nuscenes/image_name
 
 
 # for IDE

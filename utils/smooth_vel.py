@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 import numpy as np
 from scipy.interpolate import CubicSpline
@@ -36,6 +35,8 @@ def MoveAverage(wheel: np.ndarray, window_size=3):
     # 使用numpy的convolve函数实现移动平均
     weights = np.repeat(1.0, window_size) / window_size
     speeds_smooth = []
+
+    # 因为convolve仅支持一维操作
     for speed in speeds.T:
         speed_smooth = np.convolve(speed, weights, 'valid')  # 'valid'选项表示不使用填充
         speeds_smooth.append(speed_smooth[..., None])
@@ -62,3 +63,7 @@ def MoveAverageWithExpWeight(wheel: np.ndarray, alpha=0.2):
 
     wheel_smooth = np.concatenate([time, np.array(speed_smooth)], axis=-1)
     return wheel_smooth
+
+if __name__ == "__main__":
+    a = np.convolve([1,2,3,4,5,6],[1,1,1],'vaild')
+    print(a)
