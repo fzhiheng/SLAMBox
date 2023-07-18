@@ -62,7 +62,7 @@ def vel2acc(wheel_speed):
 
 
 if __name__ == '__main__':
-    dataset_root = "dataset/nuscenes/v1.0-mini" # 数据集路径
+    dataset_root = "./v1.0-mini" # 数据集路径
     images_root = "dataset/nuscenes/output" # 结果图片保存路径
 
     nusc = NuScenes(version='v1.0-mini', dataroot=dataset_root, verbose=True)
@@ -70,7 +70,9 @@ if __name__ == '__main__':
 
     for scene in nusc.scene:
         scene_name = scene['name']
+        print(scene_name)
         # nusc_can.print_all_message_stats(scene_name)
+        # 这里得到的信息是全部序列的信息，不是sampel的信息
         wheel_ = nusc_can.get_messages(scene_name, 'zoe_veh_info')
 
         wheel_speed = np.array([(m['utime'], m['FL_wheel_speed']) for m in wheel_])
