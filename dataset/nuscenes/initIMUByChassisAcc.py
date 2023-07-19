@@ -9,14 +9,13 @@ from nuscenes.can_bus.can_bus_api import NuScenesCanBus
 from utils.smooth_vel import CubicSplineSmooth,MoveAverage,MoveAverageWithExpWeight
 
 # Project ：SLAMBox 
-# File    ：initIMU.py
+# File    ：initIMUByChassisAcc.py
 # Author  ：fzhiheng
 # Date    ：2023/7/13 上午9:35
 
 """
-IMU初始化测试
+使用底盘加速度初始化IMU
 """
-
 
 if __name__ == '__main__':
     dataset_root = "./v1.0-mini" # 数据集路径

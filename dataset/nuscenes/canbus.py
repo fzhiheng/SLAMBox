@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     for scene in nusc.scene:
         scene_name = scene['name']
-        nusc_can.print_all_message_stats(scene_name)
+        # nusc_can.print_all_message_stats(scene_name)
 
         # 获取不同传感器的数据
         imu = nusc_can.get_messages(scene_name, 'ms_imu')
