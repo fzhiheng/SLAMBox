@@ -63,7 +63,7 @@ def vel2acc(wheel_speed):
 
 if __name__ == '__main__':
     dataset_root = "./v1.0-mini" # 数据集路径
-    images_root = "dataset/nuscenes/output" # 结果图片保存路径
+    images_root = "dataset_tutorial/nuscenes/output" # 结果图片保存路径
 
     nusc = NuScenes(version='v1.0-mini', dataroot=dataset_root, verbose=True)
     nusc_can = NuScenesCanBus(dataroot=dataset_root)

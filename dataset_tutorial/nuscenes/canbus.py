@@ -6,7 +6,7 @@ from nuscenes.can_bus.can_bus_api import NuScenesCanBus
 
 
 if __name__ == '__main__':
-    dataset_root = "/home/fzh/MyWork/dataset/nuscenes/v1.0-mini"
+    dataset_root = "/home/fzh/MyWork/dataset_tutorial/nuscenes/v1.0-mini"
     nusc = NuScenes(version='v1.0-mini', dataroot=dataset_root, verbose=True)
     nusc_can = NuScenesCanBus(dataroot=dataset_root)
 
