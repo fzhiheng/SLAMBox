@@ -1,10 +1,9 @@
 import os
 import shutil
 import json
-import numpy as np
+
 from nuscenes.nuscenes import NuScenes
-from nuscenes.utils.geometry_utils import transform_matrix
-from pyquaternion import Quaternion
+from submodule.rotation.conversion import fill_matrix
 
 
 # 为使用colmap制作的图片数据集
@@ -58,7 +57,9 @@ def save_images(dataset_root, save_to_root, save_mode="sample", camera_name="CAM
             translation = sensor_calib['translation']
             rotation = sensor_calib['rotation']
             camera_intrinsic = sensor_calib['camera_intrinsic']
-            extrinsic_matrix = transform_matrix(np.array(translation), Quaternion(rotation)).tolist()
+
+            # extrinsic_matrix = transform_matrix(np.array(translation), Quaternion(rotation)).tolist()
+            extrinsic_matrix = fill_matrix(rotation, translation).tolist()
             intrinsic = {"fx": camera_intrinsic[0][0], "fy": camera_intrinsic[1][1], "cx": camera_intrinsic[0][2],
                          "cy": camera_intrinsic[1][2], "translation": translation, "rotation": rotation,
                          "matrix": extrinsic_matrix}
@@ -151,9 +152,8 @@ if __name__ == '__main__':
         camera_intrinsic = sensor_calib['camera_intrinsic']
         print(translation)
         print(rotation)
-        print(Quaternion(rotation))
 
-        extrinsic_matrix = transform_matrix(np.array(translation), Quaternion(rotation))
+        extrinsic_matrix = fill_matrix(rotation, translation)
         scene_camera_matrix[scene['name'][-4:]] = extrinsic_matrix.flatten()
         scene_camera_intrinsic[scene['name'][-4:]] = {"fx": camera_intrinsic[0][0],
                                                       "fy": camera_intrinsic[1][1],
