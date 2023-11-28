@@ -1,10 +1,13 @@
-import os
-import math
-
+# -*- coding: UTF-8 -*-
 import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from submodule.rotation.conversion import quaternion_from_matrix, matrix_from_quaternion, matrix_from_euler_angle
+
+# File    ：visual.py
+# Author  ：fzhiheng
+# Date    ：2023/11/27
 
 def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=True, axis_length=8, inter=100, mark_start=True, mark_end=True):
     """
@@ -54,19 +57,53 @@ def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=True, 
         show_legend = False
 
 
+def SE3_from_txyzw(t, q):
+    """
+
+    Args:
+        t: xyz (*,3)
+        q: xyzw (*,4)
+
+    Returns:
+
+    """
+    matrix = matrix_from_quaternion(np.roll(q, 1, axis=-1))  # (*, 3, 3)
+    T = np.concatenate([matrix, t[..., None]], axis=-1)  # (*, 3, 4)
+    padding = np.zeros_like(T[..., :1, :])
+    padding[..., 0, -1] = 1
+    T = np.concatenate([T, padding], axis=-2)  # (*, 4, 4)
+    return T
+
+
+def txyzw_from_SE3(T):
+    """
+
+    Args:
+        T: (*,4,4)
+
+    Returns:
+
+    """
+    t = T[..., :3, 3]  # (*,3)
+    q = quaternion_from_matrix(T[..., :3, :3])  # (*,4)
+    q = np.roll(q, -1, axis=-1)  # (*,4)
+    return t, q
+
+
+def plot_tum(fig, traj, name, row=1, col=1, align_first=True, axis_length=8, inter=100, mark_start=True, mark_end=True):
+    T = SE3_from_txyzw(traj[:, 1:4], traj[:, 4:])  # (n, 4, 4)
+    plot_pose(fig, T, name, row=row, col=col, align_first=align_first, axis_length=axis_length, inter=inter, mark_start=mark_start, mark_end=mark_end)
+
+
 if __name__ == "__main__":
     num_poses = 1000
 
     # generate continuous rotation matrix
-    from quaternions import Quaternion
     x_angles = np.linspace(0, np.pi, num_poses)
     y_angles = np.linspace(0, np.pi, num_poses)
     z_angles = np.linspace(0, np.pi, num_poses)
-    Rs = []
-    for roll, pitch, yaw in zip(x_angles, y_angles, z_angles):
-        R = Quaternion.from_euler([yaw, pitch, roll], axes=['z', 'y', 'x']).get_rotation_matrix()
-        Rs.append(R)
-    Rs = np.array(Rs)
+    ypr = np.stack([y_angles, x_angles, z_angles], axis=1)
+    matrix = matrix_from_euler_angle(ypr, axes=["z", "y", "x"])
 
     # generate continuous translation
     x = np.linspace(0, 100, num_poses)
@@ -75,15 +112,11 @@ if __name__ == "__main__":
     ts = np.stack([x, y, z], axis=1)
 
     # concatenate rotation and translation
-    T = np.concatenate([Rs, ts[..., None]], axis=-1)
+    T = np.concatenate([matrix, ts[..., None]], axis=-1)
     T = np.concatenate([T, np.array([0, 0, 0, 1])[None, None, :].repeat(num_poses, axis=0)], axis=1)
-
 
     # plot
     fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'scatter3d'}]])
     plot_pose(fig, T, "traj", row=1, col=1, align_first=True, axis_length=2, inter=20, mark_start=True)
     fig.update_layout(scene=dict(aspectmode='data'))
     fig.show()
-
-
-
