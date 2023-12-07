@@ -9,7 +9,7 @@ from submodule.rotation.conversion import quaternion_from_matrix, matrix_from_qu
 # Author  ：fzhiheng
 # Date    ：2023/11/27
 
-def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=True, axis_length=8, inter=100, mark_start=True, mark_end=True):
+def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=False, axis_length=8, inter=100, mark_start=True, mark_end=True):
     """
 
     Args:
@@ -56,6 +56,21 @@ def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=True, 
                                    mode='lines', name="z-axis", marker=dict(color='blue'), showlegend=show_legend), row=row, col=col)
         show_legend = False
 
+def plot_xyz(fig, xyz: np.ndarray, name: str, row=1, col=1, mark_start=True, mark_end=True):
+    """
+
+    Args:
+        xyz: (n, 3)
+    Returns:
+
+    """
+    x, y, z = xyz[:, 0], xyz[:, 1], xyz[:, 2]
+    fig.add_trace(go.Scatter3d(x=x, y=y, z=z, mode='lines', name=name), row=row, col=col)
+    if mark_start:
+        fig.add_trace(go.Scatter3d(x=[x[0]], y=[y[0]], z=[z[0]], mode='markers', name=f"{name} start point"), row=row, col=col)
+    if mark_end:
+        fig.add_trace(go.Scatter3d(x=[x[-1]], y=[y[-1]], z=[z[-1]], mode='markers', name=f"{name} end point"), row=row, col=col)
+
 
 def SE3_from_txyzw(t, q):
     """
@@ -90,7 +105,7 @@ def txyzw_from_SE3(T):
     return t, q
 
 
-def plot_tum(fig, traj, name, row=1, col=1, align_first=True, axis_length=8, inter=100, mark_start=True, mark_end=True):
+def plot_tum(fig, traj, name, row=1, col=1, align_first=False, axis_length=8, inter=100, mark_start=True, mark_end=True):
     T = SE3_from_txyzw(traj[:, 1:4], traj[:, 4:])  # (n, 4, 4)
     plot_pose(fig, T, name, row=row, col=col, align_first=align_first, axis_length=axis_length, inter=inter, mark_start=mark_start, mark_end=mark_end)
 
