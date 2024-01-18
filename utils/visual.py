@@ -3,13 +3,14 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from submodule.rotation.conversion import quaternion_from_matrix, matrix_from_quaternion, matrix_from_euler_angle
+from pyrotation.conversion import quaternion_from_matrix, matrix_from_quaternion, matrix_from_euler_angle
+
 
 # File    ：visual.py
 # Author  ：fzhiheng
 # Date    ：2023/11/27
 
-def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=False, axis_length=8, inter=100, mark_start=True, mark_end=True):
+def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=False, axis_length=8, inter=100, mark_start=True, mark_end=True, show_legend=True):
     """
 
     Args:
@@ -43,7 +44,6 @@ def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=False,
             y_axis_end.append(y_end)
             z_axis_end.append(z_end)
 
-    show_legend = True
     for start_point, x_, y_, z_ in zip(start_points, x_axis_end, y_axis_end, z_axis_end):
         # 使用红色表示x轴
         fig.add_trace(go.Scatter3d(x=[start_point[0], x_[0]], y=[start_point[1], x_[1]], z=[start_point[2], x_[2]],
@@ -55,6 +55,7 @@ def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=False,
         fig.add_trace(go.Scatter3d(x=[start_point[0], z_[0]], y=[start_point[1], z_[1]], z=[start_point[2], z_[2]],
                                    mode='lines', name="z-axis", marker=dict(color='blue'), showlegend=show_legend), row=row, col=col)
         show_legend = False
+
 
 def plot_xyz(fig, xyz: np.ndarray, name: str, row=1, col=1, mark_start=True, mark_end=True):
     """
@@ -105,9 +106,9 @@ def txyzw_from_SE3(T):
     return t, q
 
 
-def plot_tum(fig, traj, name, row=1, col=1, align_first=False, axis_length=8, inter=100, mark_start=True, mark_end=True):
+def plot_tum(fig, traj, name, row=1, col=1, align_first=False, axis_length=8, inter=100, mark_start=True, mark_end=True, show_legend=True):
     T = SE3_from_txyzw(traj[:, 1:4], traj[:, 4:])  # (n, 4, 4)
-    plot_pose(fig, T, name, row=row, col=col, align_first=align_first, axis_length=axis_length, inter=inter, mark_start=mark_start, mark_end=mark_end)
+    plot_pose(fig, T, name, row=row, col=col, align_first=align_first, axis_length=axis_length, inter=inter, mark_start=mark_start, mark_end=mark_end, show_legend=show_legend)
 
 
 if __name__ == "__main__":
