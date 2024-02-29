@@ -1,3 +1,0 @@
-[submodule "submodule/rotation"]
-	path = submodule/rotation
-	url = git@github.com:fzhiheng/rotation.git

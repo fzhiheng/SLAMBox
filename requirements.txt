@@ -3,6 +3,7 @@ torch==2.0.0+cu117
 numpy
 matplotlib
 plum-dispatch
+pyrotation==0.0.2
 
 
 # for nuscenes
