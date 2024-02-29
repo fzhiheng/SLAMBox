@@ -3,6 +3,7 @@ torch==2.0.0+cu117
 numpy
 matplotlib
 plum-dispatch
+plotly
 pyrotation==0.0.2
 
 
