@@ -12,6 +12,7 @@ from scipy.interpolate import CubicSpline
 速度平滑方案
 """
 
+
 # 三次样条插值平滑
 def CubicSplineSmooth(wheel: np.ndarray):
     assert wheel.ndim == 2 and wheel.shape[-1] == 2
@@ -27,6 +28,7 @@ def CubicSplineSmooth(wheel: np.ndarray):
 
     wheel_smooth = np.concatenate([time_smooth[..., None], speed_smooth[..., None]], axis=-1)
     return wheel_smooth
+
 
 # 移动平均平滑
 def MoveAverage(wheel: np.ndarray, window_size=3):
@@ -49,6 +51,7 @@ def MoveAverage(wheel: np.ndarray, window_size=3):
     wheel_smooth = np.concatenate([time_smooth, speeds_smooth], axis=-1)
     return wheel_smooth
 
+
 # 移动加权平滑
 def MoveAverageWithExpWeight(wheel: np.ndarray, alpha=0.2):
     time = wheel[:, :1]
@@ -64,6 +67,7 @@ def MoveAverageWithExpWeight(wheel: np.ndarray, alpha=0.2):
     wheel_smooth = np.concatenate([time, np.array(speed_smooth)], axis=-1)
     return wheel_smooth
 
+
 if __name__ == "__main__":
-    a = np.convolve([1,2,3,4,5,6],[1,1,1],'vaild')
+    a = np.convolve([1, 2, 3, 4, 5, 6], [1, 1, 1], 'vaild')
     print(a)

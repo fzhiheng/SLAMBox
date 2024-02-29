@@ -3,7 +3,8 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from submodule.rotation.conversion import quaternion_from_matrix, matrix_from_quaternion, matrix_from_euler_angle
+from pyrotation.conversion import matrix_from_quaternion, matrix_from_euler_angle, fill_matrix
+
 
 # File    ：visual.py
 # Author  ：fzhiheng
@@ -56,6 +57,7 @@ def plot_pose(fig, pose: np.ndarray, name: str, row=1, col=1, align_first=False,
                                    mode='lines', name="z-axis", marker=dict(color='blue'), showlegend=show_legend), row=row, col=col)
         show_legend = False
 
+
 def plot_xyz(fig, xyz: np.ndarray, name: str, row=1, col=1, mark_start=True, mark_end=True):
     """
 
@@ -72,42 +74,12 @@ def plot_xyz(fig, xyz: np.ndarray, name: str, row=1, col=1, mark_start=True, mar
         fig.add_trace(go.Scatter3d(x=[x[-1]], y=[y[-1]], z=[z[-1]], mode='markers', name=f"{name} end point"), row=row, col=col)
 
 
-def SE3_from_txyzw(t, q):
-    """
-
-    Args:
-        t: xyz (*,3)
-        q: xyzw (*,4)
-
-    Returns:
-
-    """
-    matrix = matrix_from_quaternion(np.roll(q, 1, axis=-1))  # (*, 3, 3)
-    T = np.concatenate([matrix, t[..., None]], axis=-1)  # (*, 3, 4)
-    padding = np.zeros_like(T[..., :1, :])
-    padding[..., 0, -1] = 1
-    T = np.concatenate([T, padding], axis=-2)  # (*, 4, 4)
-    return T
-
-
-def txyzw_from_SE3(T):
-    """
-
-    Args:
-        T: (*,4,4)
-
-    Returns:
-
-    """
-    t = T[..., :3, 3]  # (*,3)
-    q = quaternion_from_matrix(T[..., :3, :3])  # (*,4)
-    q = np.roll(q, -1, axis=-1)  # (*,4)
-    return t, q
-
-
 def plot_tum(fig, traj, name, row=1, col=1, align_first=False, axis_length=8, inter=100, mark_start=True, mark_end=True, show_legend=True):
-    T = SE3_from_txyzw(traj[:, 1:4], traj[:, 4:])  # (n, 4, 4)
-    plot_pose(fig, T, name, row=row, col=col, align_first=align_first, axis_length=axis_length, inter=inter, mark_start=mark_start, mark_end=mark_end, show_legend=show_legend)
+    matrix = matrix_from_quaternion(np.roll(traj[:, 4:], 1, axis=-1))  # (n, 3, 3)
+    full_matrix = fill_matrix(matrix, traj[:, 1:4])
+    plot_pose(fig, full_matrix, name, row=row, col=col, align_first=align_first, axis_length=axis_length, inter=inter, mark_start=mark_start,
+              mark_end=mark_end,
+              show_legend=show_legend)
 
 
 if __name__ == "__main__":
